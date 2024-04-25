@@ -8,6 +8,9 @@ import Mongoose = require("mongoose");
 // This interface represents the structure of an offer document in the MongoDB collection.
 interface IOffersModel extends Mongoose.Document
 {
+    // Property for the offer ID associated with the offer.
+    offerId : number;
+    
     // Property for the name of the offer.
     name : string;
 

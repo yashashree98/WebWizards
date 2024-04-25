@@ -11,32 +11,42 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BudgetModel = void 0;
 const Mongoose = require("mongoose");
-const DataAccess_1 = require("../DataAccess");
-let mongooseConnection = DataAccess_1.DataAccess.mongooseConnection;
-let mongooseObj = DataAccess_1.DataAccess.mongooseInstance;
 class BudgetModel {
     constructor(dbConnectionString) {
         this.dbConnectionString = dbConnectionString;
         this.createSchema();
         this.createModel();
     }
+    createSchema() {
+        this.schema = new Mongoose.Schema({
+            categoryId: String,
+            budget: [
+                {
+                    budgetId: Number,
+                    amount: Number,
+                    date: Date,
+                    note: String
+                }
+            ]
+        }, { collection: "budget" });
+    }
     createModel() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                this.model = mongooseConnection.model("budget", this.schema);
+                yield Mongoose.connect(this.dbConnectionString, { useNewUrlParser: true, useUnifiedTopology: true });
+                this.model = Mongoose.model("Budget", this.schema);
             }
             catch (e) {
                 console.error(e);
             }
         });
     }
-    createSchema() {
-        this.schema = new Mongoose.Schema({ userId: String, name: String, description: String }, { collection: "budget" });
-    }
-    getAllBudget() {
+    retrieveBudgetDetails(response, filter) {
         return __awaiter(this, void 0, void 0, function* () {
+            var query = this.model.findOne(filter);
             try {
-                return yield this.model.find().exec();
+                const categoryArray = yield query.exec();
+                response.json(categoryArray);
             }
             catch (error) {
                 console.error(error);
@@ -44,56 +54,19 @@ class BudgetModel {
             }
         });
     }
-    getAllBudgetByUser(userId) {
+    retrieveBudgetCount(response, filter) {
         return __awaiter(this, void 0, void 0, function* () {
+            var query = this.model.findOne(filter);
             try {
-                return yield this.model.find({ userId }).exec();
-            }
-            catch (error) {
-                console.error(error);
-                throw error;
-            }
-        });
-    }
-    getOneBudgetById(id) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                return yield this.model.findById(id).exec();
-            }
-            catch (error) {
-                console.error(error);
-                throw error;
-            }
-        });
-    }
-    createBudget(budgetData) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const budget = new this.model(budgetData);
-                return yield budget.save();
-            }
-            catch (error) {
-                console.error(error);
-                throw error;
-            }
-        });
-    }
-    updateBudget(budgetId, budgetData) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                return yield this.model.findByIdAndUpdate(budgetId, budgetData, { new: true });
-            }
-            catch (error) {
-                console.error(error);
-                throw error;
-            }
-        });
-    }
-    deleteBudget(budgetId) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const result = yield this.model.findByIdAndDelete(budgetId);
-                return !!result;
+                const budgetList = yield query.exec();
+                if (budgetList == null) {
+                    response.status(404);
+                    response.json('{count: -1}');
+                }
+                else {
+                    console.log('List of Budget: ' + budgetList.budget.length);
+                    response.json('{count:' + budgetList.budget.length + '}');
+                }
             }
             catch (error) {
                 console.error(error);

@@ -11,9 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CategoryModel = void 0;
 const Mongoose = require("mongoose");
-const DataAccess_1 = require("../DataAccess");
-let mongooseConnection = DataAccess_1.DataAccess.mongooseConnection;
-let mongooseObj = DataAccess_1.DataAccess.mongooseInstance;
+//import { DataAccess } from "../DataAccess";
 class CategoryModel {
     constructor(dbConnectionString) {
         this.dbConnectionString = dbConnectionString;
@@ -23,7 +21,8 @@ class CategoryModel {
     createModel() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                this.model = mongooseConnection.model("category", this.schema);
+                yield Mongoose.connect(this.dbConnectionString, { useNewUrlParser: true, useUnifiedTopology: true });
+                this.model = Mongoose.model("category", this.schema);
             }
             catch (e) {
                 console.error(e);
@@ -31,12 +30,18 @@ class CategoryModel {
         });
     }
     createSchema() {
-        this.schema = new Mongoose.Schema({ userId: String, name: String, description: String }, { collection: "category" });
+        this.schema = new Mongoose.Schema({
+            categoryId: String,
+            name: String,
+            description: String
+        }, { collection: "category" });
     }
-    getAllCategories() {
+    retrieveAllCategories(response) {
         return __awaiter(this, void 0, void 0, function* () {
+            var query = this.model.find({});
             try {
-                return yield this.model.find().exec();
+                const categoryArray = yield query.exec();
+                response.json(categoryArray);
             }
             catch (error) {
                 console.error(error);
@@ -44,10 +49,12 @@ class CategoryModel {
             }
         });
     }
-    getAllCategoriesByUser(userId) {
+    retrieveCategories(response, value) {
         return __awaiter(this, void 0, void 0, function* () {
+            var query = this.model.findOne({ categoryId: value });
             try {
-                return yield this.model.find({ userId }).exec();
+                const result = yield query.exec();
+                response.json(result);
             }
             catch (error) {
                 console.error(error);
@@ -55,49 +62,17 @@ class CategoryModel {
             }
         });
     }
-    getOneCategoryById(id) {
+    retrieveCategoryCount(response) {
         return __awaiter(this, void 0, void 0, function* () {
+            console.log("retrieve Category Count ...");
+            var query = this.model.estimatedDocumentCount();
             try {
-                return yield this.model.findById(id).exec();
+                const numberOfCategories = yield query.exec();
+                console.log("numberOfCategories: " + numberOfCategories);
+                response.json(numberOfCategories);
             }
-            catch (error) {
-                console.error(error);
-                throw error;
-            }
-        });
-    }
-    createCategory(categoryData) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const category = new this.model(categoryData);
-                return yield category.save();
-            }
-            catch (error) {
-                console.error(error);
-                throw error;
-            }
-        });
-    }
-    updateCategory(categoryId, categoryData) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                return yield this.model.findByIdAndUpdate(categoryId, categoryData, { new: true });
-            }
-            catch (error) {
-                console.error(error);
-                throw error;
-            }
-        });
-    }
-    deleteCategory(categoryId) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const result = yield this.model.findByIdAndDelete(categoryId);
-                return !!result;
-            }
-            catch (error) {
-                console.error(error);
-                throw error;
+            catch (e) {
+                console.error(e);
             }
         });
     }

@@ -5,6 +5,10 @@ import Mongoose = require("mongoose");
 // This interface represents the structure of a user document in the MongoDB collection.
 interface IUserModel extends Mongoose.Document
 {
+    
+    // Property for the user ID associated with the budget.
+    userId : number;
+    
     // Property for the user's first name.
     fname : string;
 

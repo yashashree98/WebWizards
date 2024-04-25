@@ -9,10 +9,10 @@ import Mongoose = require("mongoose");
 interface IBudgetModel extends Mongoose.Document
 {
     // Property for the user ID associated with the budget.
-    //userId : mongoose.Types.ObjectId;
+    //userId : string;
 
     // Property for the category ID associated with the budget.
-    //categoryId : mongoose.Types.ObjectId;
+    categoryId : string;
 
     // Property for the budget ID associated with the budget.
     budgetId : number;

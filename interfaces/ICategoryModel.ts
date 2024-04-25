@@ -12,7 +12,7 @@ interface ICategoryModel extends Mongoose.Document
     //userId : mongoose.Types.ObjectId;
 
     // Property for the category ID associated with the budget.
-    categoryId : number;
+    categoryId : string;
 
     // Property for the name of the category.
     name : string;

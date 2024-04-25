@@ -19,17 +19,15 @@ class UserModel {
 
     public async createModel() 
     {
-        try
-        {
+        try{
             this.model = mongooseConnection.model<IUserModel>("Users", this.schema)
         }
-        catch(e)
-        {
+        catch(e){
             console.error(e)
         }
     }
 
-    public createSchema()
+    public createSchema(): void
     {
         this.schema = new Mongoose.Schema(
             {
@@ -40,9 +38,11 @@ class UserModel {
             }, { collection : "users" });
     }
 
-    public getAllUsers(response : any){console.log("Get all users")
-    var query = this.model.find({})
-    query.exec((error,itemArray)=>{response.json(itemArray)})
+    public getAllUsers(response : any)
+    {
+        console.log("Get all users")
+        var query = this.model.find({})
+        query.exec((error,itemArray)=>{response.json(itemArray)})
     }
     
 
