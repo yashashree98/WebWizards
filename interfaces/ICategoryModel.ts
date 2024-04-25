@@ -9,7 +9,10 @@ import Mongoose = require("mongoose");
 interface ICategoryModel extends Mongoose.Document
 {
     // Property for the user ID associated with the category.
-    userId : mongoose.Types.ObjectId;
+    //userId : mongoose.Types.ObjectId;
+
+    // Property for the category ID associated with the budget.
+    categoryId : number;
 
     // Property for the name of the category.
     name : string;
