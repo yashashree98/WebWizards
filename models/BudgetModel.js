@@ -33,7 +33,7 @@ class BudgetModel {
     createModel() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                yield Mongoose.connect(this.dbConnectionString, { useNewUrlParser: true, useUnifiedTopology: true });
+                //await Mongoose.connect(this.dbConnectionString, {useNewUrlParser: true, useUnifiedTopology: true} as Mongoose.ConnectOptions);
                 this.model = Mongoose.model("Budget", this.schema);
             }
             catch (e) {

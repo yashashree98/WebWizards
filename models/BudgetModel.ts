@@ -35,7 +35,7 @@ class BudgetModel{
     public async createModel(){
         try
         {
-            await Mongoose.connect(this.dbConnectionString, {useNewUrlParser: true, useUnifiedTopology: true} as Mongoose.ConnectOptions);
+            //await Mongoose.connect(this.dbConnectionString, {useNewUrlParser: true, useUnifiedTopology: true} as Mongoose.ConnectOptions);
             this.model = Mongoose.model<IBudgetModel>("Budget",this.schema)
         }
         catch(e){

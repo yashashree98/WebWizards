@@ -19,7 +19,7 @@ class CategoryModel{
     public async createModel(){
         try
         {
-            await Mongoose.connect(this.dbConnectionString, {useNewUrlParser: true, useUnifiedTopology: true} as Mongoose.ConnectOptions);
+            //await Mongoose.connect(this.dbConnectionString, {useNewUrlParser: true, useUnifiedTopology: true} as Mongoose.ConnectOptions);
             this.model = Mongoose.model<ICategoryModel>("category",this.schema)
         }
         catch(e){
