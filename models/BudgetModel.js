@@ -33,11 +33,24 @@ class BudgetModel {
     createModel() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                //await Mongoose.connect(this.dbConnectionString, {useNewUrlParser: true, useUnifiedTopology: true} as Mongoose.ConnectOptions);
+                yield Mongoose.connect(this.dbConnectionString, { useNewUrlParser: true, useUnifiedTopology: true });
                 this.model = Mongoose.model("Budget", this.schema);
             }
             catch (e) {
                 console.error(e);
+            }
+        });
+    }
+    retrieveAllBudget(response) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var query = this.model.find({});
+            try {
+                const budgetArray = yield query.exec();
+                response.json(budgetArray);
+            }
+            catch (error) {
+                console.error(error);
+                throw error;
             }
         });
     }
@@ -71,6 +84,20 @@ class BudgetModel {
             catch (error) {
                 console.error(error);
                 throw error;
+            }
+        });
+    }
+    retrieveBudgetCounts(response) {
+        return __awaiter(this, void 0, void 0, function* () {
+            console.log("retrieve Budget Count ...");
+            var query = this.model.estimatedDocumentCount();
+            try {
+                const numberOfBudget = yield query.exec();
+                console.log("numberOfCategories: " + numberOfBudget);
+                response.json(numberOfBudget);
+            }
+            catch (e) {
+                console.error(e);
             }
         });
     }

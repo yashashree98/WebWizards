@@ -18,23 +18,23 @@ class CategoryModel {
         this.createSchema();
         this.createModel();
     }
+    createSchema() {
+        this.schema = new Mongoose.Schema({
+            categoryId: Number,
+            name: String,
+            description: String
+        }, { collection: "category" });
+    }
     createModel() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                //await Mongoose.connect(this.dbConnectionString, {useNewUrlParser: true, useUnifiedTopology: true} as Mongoose.ConnectOptions);
-                this.model = Mongoose.model("category", this.schema);
+                yield Mongoose.connect(this.dbConnectionString, { useNewUrlParser: true, useUnifiedTopology: true });
+                this.model = Mongoose.model("Category", this.schema);
             }
             catch (e) {
                 console.error(e);
             }
         });
-    }
-    createSchema() {
-        this.schema = new Mongoose.Schema({
-            categoryId: String,
-            name: String,
-            description: String
-        }, { collection: "category" });
     }
     retrieveAllCategories(response) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -49,8 +49,9 @@ class CategoryModel {
             }
         });
     }
-    retrieveCategories(response, value) {
+    retrieveCategory(response, value) {
         return __awaiter(this, void 0, void 0, function* () {
+            console.log("Hello ");
             var query = this.model.findOne({ categoryId: value });
             try {
                 const result = yield query.exec();
@@ -58,7 +59,6 @@ class CategoryModel {
             }
             catch (error) {
                 console.error(error);
-                throw error;
             }
         });
     }

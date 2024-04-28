@@ -12,23 +12,18 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.App = void 0;
 const express = require("express");
 const bodyParser = require("body-parser");
-// import {UserModel} from './models/UserModel'; 
 const CategoryModel_1 = require("./models/CategoryModel");
 const BudgetModel_1 = require("./models/BudgetModel");
-// import { OffersModel } from './models/OffersModel';
 const crypto = require("crypto");
 // Creates and configures an ExpressJS web server.
 class App {
-    // public Offers : OffersModel;
     //Run configuration methods on the Express instance.
     constructor(mongoDBConnection) {
         this.expressApp = express();
         this.middleware();
         this.routes();
-        // this.Users = new UserModel(mongoDBConnection);
         this.Category = new CategoryModel_1.CategoryModel(mongoDBConnection);
         this.Budget = new BudgetModel_1.BudgetModel(mongoDBConnection);
-        // this.Offers = new OffersModel(mongoDBConnection);
     }
     // Configure Express middleware.
     middleware() {
@@ -43,63 +38,53 @@ class App {
     // Configure API endpoints.
     routes() {
         let router = express.Router();
-        //get all users
-        router.get('/app/category/:categoryId/count', (req, res) => __awaiter(this, void 0, void 0, function* () {
-            var id = req.params.categoryId;
-            console.log('Query single budget with id:' + id);
-            yield this.Budget.retrieveBudgetCount(res, { categoryId: id });
-        }));
-        router.get('/app/category/:categoryId', (req, res) => __awaiter(this, void 0, void 0, function* () {
-            var id = req.params.categoryId;
-            console.log('Query single list with id:' + id);
-            yield this.Budget.retrieveBudgetCount(res, { categoryId: id });
-        }));
-        router.get('/app/category/:categoryId', (req, res) => __awaiter(this, void 0, void 0, function* () {
-            var id = parseInt(req.params.categoryId);
-            console.log('Query single list with id: ' + id);
-            yield this.Category.retrieveCategories(res, id);
-        }));
-        router.post('/app/category/', (req, res) => __awaiter(this, void 0, void 0, function* () {
-            const id = crypto.randomBytes(16).toString("hex");
-            console.log(req.body);
-            var jsonObj = req.body;
-            jsonObj.categoryId = id;
-            try {
-                yield this.Category.model.create([jsonObj]);
-                res.send('{"id""' + id + '"}');
-            }
-            catch (e) {
-                console.error(e);
-                console.log('object creation failed');
-            }
-        }));
-        router.post('/app/category2/', (req, res) => __awaiter(this, void 0, void 0, function* () {
-            const id = crypto.randomBytes(16).toString("hex");
-            console.log(req.body);
-            var jsonObj = req.body;
-            jsonObj.categoryId = id;
-            const doc = new this.Category.model(jsonObj);
-            try {
-                yield doc.save();
-                res.send('{"id":"' + id + '"}');
-            }
-            catch (e) {
-                console.log('object creation failed');
-                console.error(e);
-            }
-        }));
+        // get all categories   //working fine
         router.get('/app/category/', (req, res) => __awaiter(this, void 0, void 0, function* () {
             console.log('Query All Categories');
             yield this.Category.retrieveAllCategories(res);
         }));
+        //get one category    //not working
+        router.get('/app/category/:categoryId', (req, res) => __awaiter(this, void 0, void 0, function* () {
+            var id = parseInt(req.params.categoryId);
+            console.log('Query to get one category with id:' + id);
+            try {
+                yield this.Category.retrieveCategory(res, id);
+            }
+            catch (error) {
+                console.error(error);
+                res.status(500).json({ error: 'An error occurred while retrieving the category.' });
+            }
+        }));
+        // get count of all categories   //working fine
         router.get('/app/categorycount', (req, res) => __awaiter(this, void 0, void 0, function* () {
             console.log('Query the number of category elements in db');
             yield this.Category.retrieveCategoryCount(res);
         }));
-        router.get('/app/category/:categoryId/budgets', (req, res) => __awaiter(this, void 0, void 0, function* () {
-            var id = req.params.categoryId;
-            console.log('Query single Category with id: ' + id);
-            yield this.Budget.retrieveBudgetDetails(res, { categoryId: id });
+        //create category    //have not checked
+        router.post('/app/category/', (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const id = crypto.randomBytes(16).toString("hex");
+            console.log(req.body);
+            var jsonObj = req.body;
+            jsonObj.listId = id;
+            try {
+                yield this.Category.model.create([jsonObj]);
+                //res.send('{"id""' + id + '"}');
+                res.send('Category created successfully for ' + jsonObj.name);
+            }
+            catch (e) {
+                console.error(e);
+                console.log('object creation failed');
+            }
+        }));
+        //get all budget    //working fine
+        router.get('/app/budget/', (req, res) => __awaiter(this, void 0, void 0, function* () {
+            console.log('Query All budget');
+            yield this.Budget.retrieveAllBudget(res);
+        }));
+        //get count of all budgets    //working fine
+        router.get('/app/budgetcount', (req, res) => __awaiter(this, void 0, void 0, function* () {
+            console.log('Query the number of budget elements in db');
+            yield this.Budget.retrieveBudgetCounts(res);
         }));
         this.expressApp.use('/', router);
         this.expressApp.use('/app/json/', express.static(__dirname + '/app/json'));

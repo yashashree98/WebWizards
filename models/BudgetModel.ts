@@ -1,6 +1,5 @@
 import * as Mongoose from "mongoose";
 import { IBudgetModel } from "../interfaces/IBudgetModel";
-import { DataAccess } from "../DataAccess";
 
 
 class BudgetModel{
@@ -35,7 +34,7 @@ class BudgetModel{
     public async createModel(){
         try
         {
-            //await Mongoose.connect(this.dbConnectionString, {useNewUrlParser: true, useUnifiedTopology: true} as Mongoose.ConnectOptions);
+            await Mongoose.connect(this.dbConnectionString, {useNewUrlParser: true, useUnifiedTopology: true} as Mongoose.ConnectOptions);
             this.model = Mongoose.model<IBudgetModel>("Budget",this.schema)
         }
         catch(e){
@@ -43,6 +42,19 @@ class BudgetModel{
         }
     }
 
+    public async retrieveAllBudget(response:any)
+    {
+        var query = this.model.find({});
+        try 
+        {
+            const budgetArray = await query.exec();
+            response.json(budgetArray);
+        } 
+        catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
     public async retrieveBudgetDetails(response:any, filter:Object) //: Promise<IBudgetModel[]> 
     {
         var query =  this.model.findOne(filter);
@@ -78,6 +90,20 @@ class BudgetModel{
         catch (error) {
             console.error(error);
             throw error;
+        }
+    }
+
+    public async retrieveBudgetCounts(response : any) 
+    {
+        console.log("retrieve Budget Count ...");
+        var query = this.model.estimatedDocumentCount();
+        try {
+            const numberOfBudget = await query.exec();
+            console.log("numberOfCategories: " + numberOfBudget);
+            response.json(numberOfBudget);
+        }
+        catch (e) {
+            console.error(e);
         }
     }
 
